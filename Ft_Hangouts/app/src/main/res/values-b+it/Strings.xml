@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_name">Nome Contatto</string>
+    <string name="phone_number">Numero telefono</string>
+    <string name="email">Email</string>
+    <string name="options">opzioni</string>
+    <string name="theme">Tema</string>
+    <string name="sayan">Sayan</string>
+    <string name="_void">Void</string>
+    <string name="sith">Sith</string>
+    <string name="create_contact">Crea Contatto</string>
+    <string name="fab">FAB</string>
+    <string name="btntocall">btnToCall</string>
+    <string name="btntoedit">btnToEdit</string>
+    <string name="update_contact">Aggiorna Contatto</string>
+    <string name="sms">Scrivi qui</string>
+
+</resources>
