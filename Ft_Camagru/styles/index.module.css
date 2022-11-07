@@ -1,0 +1,69 @@
+.header {
+    @apply flex justify-between max-w-6xl mx-5 xl:mx-auto
+}
+
+.header__bigLogo {
+    @apply relative hidden md:inline-grid w-24 cursor-pointer
+}
+
+.header__smLogo {
+    @apply relative md:hidden w-24 cursor-pointer
+}
+
+.header__searchBox {
+    @apply mt-1 relative p-3 rounded-md
+}
+
+.header_searchIcon {
+    @apply absolute inset-y-0 pl-3 flex items-center pointer-events-none
+}
+
+.header__searchField {
+    @apply bg-gray-50 block w-full pl-10 sm:text-sm border-gray-300
+    focus:ring-black focus:border-black rounded-md
+}
+
+.header__leftElements {
+    @apply flex items-center justify-end space-x-4
+}
+
+.errorMsg {
+    color: blue;
+    font-size: small;
+    font-style: italic;
+    @apply truncate
+}
+
+.errorMsg:before {
+    display: inline;
+    content: "⚠ ";
+}
+
+.sing__passField {
+    @apply block pr-10 mt-2 rounded-lg
+}
+
+.popover__content {
+    font-size: smaller;
+    z-index: 20;
+    position: relative;
+    transform: translate(0, 10px);
+    left: -180px;
+    top: -180px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    width: 5.5rem;
+    @apply bg-blue-300 rounded-lg md:-left-[320px] md:top-0 md:w-[7rem]
+}
+.popover__content:before {
+    position: absolute;
+    z-index: -1;
+    content: "";
+    left: calc(90%);
+    bottom: calc(50%);
+    border-style: solid;
+    border-width: 0 30px 20px 10px;
+    border-color: transparent transparent #93c5fd transparent;
+    transition-duration: 0.3s;
+    transition-property: transform;
+}
