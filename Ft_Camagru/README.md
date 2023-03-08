@@ -12,7 +12,5 @@ completely "serverless" thanks to Firebase and Next-Auth
 
 implemented login with Google, in addition to the classic Email+Password
 
-Deployed to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
 
 
-Check it out ! 🚀 [Camagru](https://ft-camagru.vercel.app/)  <- edit 01/03/2022 firebase database free tier expired, u can see just the UI here, no IMG
