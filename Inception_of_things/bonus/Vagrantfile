@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "debian/bookworm64"
+
+  # Disable automatic box update checking
+  config.vm.box_check_update = false
+
+  # Server VM (Controller)
+  config.vm.define "IoT-p3-bonus" do |server|
+    server.vm.hostname = "IoT-p3-bonus"
+    server.vm.network "private_network", ip: "192.168.56.111"
+    server.vm.provider "virtualbox" do |vb|
+      vb.name = "IoT-p3-bonus"
+      # 8GB of Ram is mandatory for bonus assignment
+      # Gitlab will need at least 6GB of RAM
+      vb.memory = "8192"
+      vb.cpus = 6
+      vb.customize ["modifyvm", :id, "--name", "IoT-p3-bonus"]
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    end
+
+    server.vm.provision "file", source: "confs", destination: "~/confs"
+    server.vm.provision "file", source: "scripts", destination: "~/scripts"
+
+    # Install K3s server
+    server.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get upgrade -y
+      chmod +x -R ./scripts/
+      ./scripts/install.sh
+    SHELL
+  end
+end

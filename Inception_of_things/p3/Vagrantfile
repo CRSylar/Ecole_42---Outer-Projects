@@ -1,0 +1,40 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "debian/bookworm64"
+
+  # Disable automatic box update checking
+  config.vm.box_check_update = false
+
+  # Server VM (Controller)
+  config.vm.define "IoT-p3" do |server|
+    server.vm.hostname = "IoT-p3"
+    
+    server.vm.provider "virtualbox" do |vb|
+      vb.name = "IoT-p3"
+      vb.memory = "4096" # Allocate 4GB of RAM
+      vb.cpus = 4
+      vb.customize ["modifyvm", :id, "--name", "IoT-p3"]
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    end
+
+    server.vm.provision "file", source: "confs", destination: "~/confs"
+    server.vm.provision "file", source: "scripts", destination: "~/scripts"
+
+    # Install K3s server
+    server.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get upgrade -y
+      chmod +x -R ./scripts/
+      ./scripts/install.sh
+    SHELL
+  end
+end

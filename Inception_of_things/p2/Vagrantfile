@@ -1,0 +1,57 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "debian/bookworm64"
+
+  # Disable automatic box update checking
+  config.vm.box_check_update = false
+
+  # Server VM (Controller)
+  config.vm.define "gfratiniS" do |server|
+    server.vm.hostname = "gfratiniS"
+    server.vm.network "private_network", ip: "192.168.56.110"
+
+    server.vm.provider "virtualbox" do |vb|
+      vb.name = "gfratiniS"
+      vb.memory = "1024"
+      vb.cpus = 1
+      vb.customize ["modifyvm", :id, "--name", "cromaldeS"]
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    end
+
+    server.vm.provision "file", source: "confs", destination: "~/confs"
+    server.vm.provision "file", source: "scripts", destination: "~/scripts"
+
+    # Install K3s server
+    server.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+
+      # Install K3s server
+      wget -O- https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+
+      # Wait for K3s to start
+      while ! nc -z 127.0.0.1 6443 ;
+      do
+        echo waiting for kubernetes
+        sleep 1
+      done
+      echo "K3s server installed and configured"
+
+      # Install kubectl (already included with K3s, but make it available)
+      ln -sf /usr/local/bin/k3s /usr/local/bin/kubectl
+
+      chmod +x -R ./scripts/
+      ./scripts/setup.sh
+      echo "Applications installed!"
+
+    SHELL
+  end
+end

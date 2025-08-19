@@ -1,0 +1,90 @@
+# Part 1: K3s and Vagrant
+# Replace YOUR_LOGIN with your actual login name
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bookworm64"
+  
+  # Disable automatic box update checking
+  config.vm.box_check_update = false
+
+  # Server VM (Controller)
+  config.vm.define "cromaldeS" do |server|
+    server.vm.hostname = "cromaldeS"
+    server.vm.network "private_network", ip: "192.168.56.110"
+    
+    server.vm.provider "virtualbox" do |vb|
+      vb.name = "cromaldeS"
+      vb.memory = "2048"
+      vb.cpus = 1
+      vb.customize ["modifyvm", :id, "--name", "cromaldeS"]
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    end
+    
+    # Install K3s server
+    server.vm.provision "shell", inline: <<-SHELL
+      # Update system
+      apt-get update
+    
+
+      # Install K3s server
+      wget -O- https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+      
+      # Wait for K3s to start
+      while ! nc -z 127.0.0.1 6443 ; 
+      do
+        echo waiting for kubernetes
+        sleep 1
+      done
+ 
+      
+      # Get node token for worker
+      cp /var/lib/rancher/k3s/server/node-token /vagrant/node-token
+      
+      # Copy kubeconfig for external access
+      cp /etc/rancher/k3s/k3s.yaml /vagrant/kubeconfig
+      sed -i 's/127.0.0.1/192.168.56.110/g' /vagrant/kubeconfig
+      
+      # Install kubectl (already included with K3s, but make it available)
+      ln -sf /usr/local/bin/k3s /usr/local/bin/kubectl
+      
+      echo "K3s server installed and configured"
+      echo "Node token saved to /vagrant/node-token"
+    SHELL
+  end
+
+  # Worker VM (Agent)
+  config.vm.define "cromaldeSW" do |worker|
+    worker.vm.hostname = "cromaldeSW"
+    worker.vm.network "private_network", ip: "192.168.56.111"
+ 
+    worker.vm.provider "virtualbox" do |vb|
+      vb.name = "cromaldeSW"
+      vb.memory = "512"
+      vb.cpus = 1
+      vb.customize ["modifyvm", :id, "--name", "cromaldeSW"]
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    end
+    
+    # Install K3s agent
+    worker.vm.provision "shell", inline: <<-SHELL
+      # Update system
+      apt-get update
+
+      sysctl -w net.ipv4.ip_forward=1
+
+      # Wait for server to be ready and token to be available
+      while [ ! -f /vagrant/node-token ]; do
+        echo "Waiting for server node token..."
+        sleep 10
+      done
+      
+      # Install K3s agent
+      K3S_TOKEN=$(cat /vagrant/node-token)
+      wget -O- https://get.k3s.io | sh -s - agent --token $K3S_TOKEN --server https://192.168.56.110:6443
+      
+      echo "K3s agent installed and configured"
+    SHELL
+  end
+end
