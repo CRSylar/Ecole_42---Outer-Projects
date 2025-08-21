@@ -2,9 +2,10 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000000";
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "YourEtherscanAPIKey";
 
 module.exports = {
-  solidity: "0.8.20",
+  solidity: "0.8.28",
   networks: {
     bscTestnet: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",
@@ -13,7 +14,7 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: "I1F26VHGGACG6RZGGXIU8AX3IKPT6WG5RS",
+    apiKey: ETHERSCAN_API_KEY,
   },
   sourcify: {
     // Disabled by default
