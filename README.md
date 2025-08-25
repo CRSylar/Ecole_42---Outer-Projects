@@ -13,7 +13,7 @@ Each folder contains a distinct project, with its own documentation and code. Us
 - [Inception_of_things](Inception_of_things/) — Infrastructure as Code (Vagrant, docker, kubernetes, ArgoCD)
 - [Swifty_Companion](Swifty_Companion/) — Mobile app (Swift/Android) - a 42Companion app to check the students status and more
 - [Tokenizer](Tokenizer/) — Web3 project - Deploy a simple token on BNB Testnet
-
+- [TokenizeArt](TokenizeArt/) - Web3 project - Create, Deploy and mint NTFs on BNB Testnet
 ---
 
 Feel free to explore each project folder for more details, documentation, and source code. For any questions, refer to the individual project README files.
